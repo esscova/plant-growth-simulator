@@ -46,8 +46,10 @@ def prever(luz: float, agua: float) -> float:
         float: altura da planta
     """
     luz_norm, agua_norm = normalizar(luz, agua)
-    x = np.array([luz_norm, agua_norm, luz_norm * agua_norm])
-    x = sm.add_constant(x)  
+    x = np.array([1, luz_norm, agua_norm, luz_norm * agua_norm])
+    print("Shape de x:", x.shape)  # Deve ser (1, 4)
+    print("x:", x)
+    print("Shape dos coeficientes:", modelo.params.shape)  # Deve ser (4,)
     return modelo.predict(x)[0]
 
 # rotas
@@ -57,8 +59,8 @@ def index():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    luz = request.form['Luz']
-    agua = request.form['Agua']
+    luz = request.form['luz']
+    agua = request.form['agua']
     altura = prever(float(luz), float(agua))
     return jsonify({'altura': altura})
 
