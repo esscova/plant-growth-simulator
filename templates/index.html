@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Simulador de Crescimento de Plantas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .slider-container {
+            margin: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #resultado {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simulador de Crescimento de Plantas</h1>
+    <p>Ajuste os sliders para simular o crescimento da planta com base em luz e água.</p>
+
+    <div class="slider-container">
+        <label for="luz">Luz (horas/dia): <span id="luz_valor">6</span></label><br>
+        <input type="range" id="luz" name="luz" min="0" max="12" step="1" value="6" 
+               oninput="document.getElementById('luz_valor').innerText = this.value">
+    </div>
+
+    <div class="slider-container">
+        <label for="agua">Água (ml/dia): <span id="agua_valor">50</span></label><br>
+        <input type="range" id="agua" name="agua" min="0" max="100" step="10" value="50" 
+               oninput="document.getElementById('agua_valor').innerText = this.value">
+    </div>
+
+    <button onclick="simular()">Simular</button>
+    <div id="resultado"></div>
+
+    <h2>Sobre</h2>
+    <p>Este projeto aplica o Planejamento de Experimentos para simular o crescimento de plantas, 
+       usando luz (0-12 horas) e água (0-100 ml) como fatores. Desenvolvido com Flask (backend), 
+       HTML/JavaScript (frontend) e Python (análise estatística).</p>
+
+    <script>
+        function simular() {
+            var luz = document.getElementById('luz').value;
+            var agua = document.getElementById('agua').value;
+            fetch('/predict', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `luz=${luz}&agua=${agua}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('resultado').innerHTML = `Altura prevista: ${data.altura} cm`;
+            })
+            .catch(error => console.error('Erro:', error));
+        }
+    </script>
+</body>
+</html>
