@@ -59,7 +59,7 @@ def predict():
     luz = request.form['luz']
     agua = request.form['agua']
     altura = prever(float(luz), float(agua))
-    return jsonify({'altura': altura})
+    return jsonify({'altura': round(altura, 2)})
 
 if __name__ == '__main__':
     app.run(debug=True)
