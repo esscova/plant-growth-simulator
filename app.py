@@ -47,9 +47,6 @@ def prever(luz: float, agua: float) -> float:
     """
     luz_norm, agua_norm = normalizar(luz, agua)
     x = np.array([1, luz_norm, agua_norm, luz_norm * agua_norm])
-    print("Shape de x:", x.shape)  # Deve ser (1, 4)
-    print("x:", x)
-    print("Shape dos coeficientes:", modelo.params.shape)  # Deve ser (4,)
     return modelo.predict(x)[0]
 
 # rotas
