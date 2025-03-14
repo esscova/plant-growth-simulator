@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
     <title>Simulador de Crescimento de Plantas</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -28,6 +29,10 @@
             margin-top: 20px;
             font-size: 18px;
         }
+        canvas {
+            max-width: 600px;
+            margin: 20px auto;
+        }
     </style>
 </head>
 <body>
@@ -48,13 +53,16 @@
 
     <button onclick="simular()">Simular</button>
     <div id="resultado"></div>
+    <canvas id="grafico"></canvas>
 
     <h2>Sobre</h2>
     <p>Este projeto aplica o Planejamento de Experimentos para simular o crescimento de plantas, 
        usando luz (0-12 horas) e água (0-100 ml) como fatores. Desenvolvido com Flask (backend), 
-       HTML/JavaScript (frontend) e Python (análise estatística).</p>
+       HTML/JavaScript/Chart.js (frontend) e Python (análise estatística).</p>
 
     <script>
+        let chart;
+
         function simular() {
             var luz = document.getElementById('luz').value;
             var agua = document.getElementById('agua').value;
@@ -66,8 +74,68 @@
             .then(response => response.json())
             .then(data => {
                 document.getElementById('resultado').innerHTML = `Altura prevista: ${data.altura} cm`;
+                atualizarGrafico(data.grafico);
             })
             .catch(error => console.error('Erro:', error));
+        }
+
+        function atualizarGrafico(dados) {
+            const ctx = document.getElementById('grafico').getContext('2d');
+            
+            if (chart) {
+                chart.destroy(); // Destroi o gráfico anterior para evitar sobreposição
+            }
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [
+                        {
+                            label: `Altura vs Luz (Água = ${dados.agua_atual} ml)`,
+                            data: dados.luz_vals.map((luz, i) => ({x: luz, y: dados.alturas_luz[i]})),
+                            borderColor: 'blue',
+                            fill: false
+                        },
+                        {
+                            label: `Altura vs Água (Luz = ${dados.luz_atual} horas)`,
+                            data: dados.agua_vals.map((agua, i) => ({x: agua, y: dados.alturas_agua[i]})),
+                            borderColor: 'green',
+                            fill: false
+                        },
+                        {
+                            label: 'Ponto Atual',
+                            data: [{x: dados.luz_atual, y: dados.altura_atual}],
+                            borderColor: 'red',
+                            backgroundColor: 'red',
+                            pointRadius: 5,
+                            showLine: false
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            title: {
+                                display: true,
+                                text: 'Luz (horas) ou Água (ml)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Altura da Planta (cm)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    }
+                }
+            });
         }
     </script>
 </body>
