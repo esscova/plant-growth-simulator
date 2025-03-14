@@ -2,70 +2,263 @@
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulador de Crescimento de Plantas</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
+        :root {
+            --primary: #4CAF50;
+            --primary-dark: #388E3C;
+            --primary-light: #C8E6C9;
+            --accent: #8BC34A;
+            --text: #212121;
+            --text-secondary: #757575;
+            --background: #f9f9f9;
+            --card: #ffffff;
+            --border: #e0e0e0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 20px;
-            background-color: #f0f0f0;
         }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .card {
+            background-color: var(--card);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .simulator-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .controls {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .results {
+            flex: 2;
+            min-width: 300px;
+        }
+        
         .slider-container {
-            margin: 20px;
+            margin-bottom: 25px;
         }
+        
+        .slider-container label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: var(--text);
+        }
+        
+        .slider-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .slider-value {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            background: #e0e0e0;
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.15s ease-in-out;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: var(--primary-dark);
+        }
+        
         button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #4CAF50;
+            background-color: var(--primary);
             color: white;
             border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 4px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+        
         button:hover {
-            background-color: #45a049;
+            background-color: var(--primary-dark);
         }
+        
         #resultado {
-            margin-top: 20px;
-            font-size: 18px;
+            text-align: center;
+            font-size: 1.5rem;
+            padding: 20px 0;
+            color: var(--primary-dark);
+            font-weight: bold;
         }
-        canvas {
-            max-width: 600px;
-            margin: 20px auto;
+        
+        .chart-container {
+            position: relative;
+            height: 350px;
+            width: 100%;
+        }
+        
+        .info-section {
+            margin-top: 40px;
+        }
+        
+        .info-section h2 {
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-light);
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .icon {
+            display: inline-block;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+        
+        @media (max-width: 768px) {
+            .simulator-content {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Simulador de Crescimento de Plantas</h1>
-    <p>Ajuste os sliders para simular o crescimento da planta com base em luz e água.</p>
-
-    <div class="slider-container">
-        <label for="luz">Luz (horas/dia): <span id="luz_valor">6</span></label><br>
-        <input type="range" id="luz" name="luz" min="0" max="12" step="1" value="6" 
-               oninput="document.getElementById('luz_valor').innerText = this.value">
+    <div class="container">
+        <header>
+            <h1>Simulador de Crescimento de Plantas</h1>
+            <p>Ajuste os parâmetros para simular o crescimento da sua planta</p>
+        </header>
+        
+        <div class="simulator-content">
+            <div class="controls card">
+                <h2>Parâmetros de Crescimento</h2>
+                
+                <div class="slider-container">
+                    <div class="slider-info">
+                        <label for="luz">Exposição à Luz</label>
+                        <span class="slider-value"><span id="luz_valor">6</span> horas/dia</span>
+                    </div>
+                    <input type="range" id="luz" name="luz" min="0" max="12" step="1" value="6" 
+                           oninput="document.getElementById('luz_valor').innerText = this.value">
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-info">
+                        <label for="agua">Quantidade de Água</label>
+                        <span class="slider-value"><span id="agua_valor">50</span> ml/dia</span>
+                    </div>
+                    <input type="range" id="agua" name="agua" min="0" max="100" step="10" value="50" 
+                           oninput="document.getElementById('agua_valor').innerText = this.value">
+                </div>
+                
+                <button onclick="simular()">
+                    Simular Crescimento
+                </button>
+                
+                <div id="resultado">Altura prevista: -- cm</div>
+            </div>
+            
+            <div class="results card">
+                <h2>Resultados da Simulação</h2>
+                <div class="chart-container">
+                    <canvas id="grafico"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-section card">
+            <h2>Sobre o Projeto</h2>
+            <p>Este simulador utiliza Planejamento de Experimentos para prever o crescimento de plantas com base em dois fatores principais:</p>
+            <ul style="margin-left: 20px; margin-top: 10px; margin-bottom: 10px;">
+                <li>Luz solar (0-12 horas por dia)</li>
+                <li>Água (0-100 ml por dia)</li>
+            </ul>
+            <p>A altura estimada da planta é calculada com base em um modelo estatístico que considera os efeitos individuais e de interação entre estes fatores.</p>
+            <p>Desenvolvido com Flask (backend), HTML/JavaScript/Chart.js (frontend) e análise estatística em Python.</p>
+        </div>
+        
+        <div class="footer">
+            <p>Desenvolvido por Wellington M Santos | <a href="https://github.com/esscova" target="_blank">GitHub</a></p>
+        </div>
     </div>
-
-    <div class="slider-container">
-        <label for="agua">Água (ml/dia): <span id="agua_valor">50</span></label><br>
-        <input type="range" id="agua" name="agua" min="0" max="100" step="10" value="50" 
-               oninput="document.getElementById('agua_valor').innerText = this.value">
-    </div>
-
-    <button onclick="simular()">Simular</button>
-    <div id="resultado"></div>
-    <canvas id="grafico"></canvas>
-
-    <h2>Sobre</h2>
-    <p>Este projeto aplica o Planejamento de Experimentos para simular o crescimento de plantas, 
-       usando luz (0-12 horas) e água (0-100 ml) como fatores. Desenvolvido com Flask (backend), 
-       HTML/JavaScript/Chart.js (frontend) e Python (análise estatística).</p>
 
     <script>
         let chart;
 
         function simular() {
-            var luz = document.getElementById('luz').value;
-            var agua = document.getElementById('agua').value;
+            const luz = document.getElementById('luz').value;
+            const agua = document.getElementById('agua').value;
+            
+            // Mostrar um indicador de carregamento
+            document.getElementById('resultado').innerHTML = '<span>Calculando...</span>';
+            
             fetch('/predict', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -73,10 +266,13 @@
             })
             .then(response => response.json())
             .then(data => {
-                document.getElementById('resultado').innerHTML = `Altura prevista: ${data.altura} cm`;
+                document.getElementById('resultado').innerHTML = `Altura prevista: <span>${data.altura} cm</span>`;
                 atualizarGrafico(data.grafico);
             })
-            .catch(error => console.error('Erro:', error));
+            .catch(error => {
+                console.error('Erro:', error);
+                document.getElementById('resultado').innerHTML = 'Erro na simulação. Tente novamente.';
+            });
         }
 
         function atualizarGrafico(dados) {
@@ -93,49 +289,99 @@
                         {
                             label: `Altura vs Luz (Água = ${dados.agua_atual} ml)`,
                             data: dados.luz_vals.map((luz, i) => ({x: luz, y: dados.alturas_luz[i]})),
-                            borderColor: 'blue',
-                            fill: false
+                            borderColor: '#4CAF50',
+                            backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true
                         },
                         {
                             label: `Altura vs Água (Luz = ${dados.luz_atual} horas)`,
                             data: dados.agua_vals.map((agua, i) => ({x: agua, y: dados.alturas_agua[i]})),
-                            borderColor: 'green',
-                            fill: false
+                            borderColor: '#2196F3',
+                            backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true
                         },
                         {
-                            label: 'Ponto Atual',
+                            label: 'Configuração Atual',
                             data: [{x: dados.luz_atual, y: dados.altura_atual}],
-                            borderColor: 'red',
-                            backgroundColor: 'red',
-                            pointRadius: 5,
+                            borderColor: '#FF5722',
+                            backgroundColor: '#FF5722',
+                            pointRadius: 8,
+                            pointHoverRadius: 10,
                             showLine: false
                         }
                     ]
                 },
                 options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
                     scales: {
                         x: {
                             type: 'linear',
                             position: 'bottom',
                             title: {
                                 display: true,
-                                text: 'Luz (horas) ou Água (ml)'
+                                text: 'Luz (horas) ou Água (ml)',
+                                font: {
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.05)'
                             }
                         },
                         y: {
                             title: {
                                 display: true,
-                                text: 'Altura da Planta (cm)'
+                                text: 'Altura da Planta (cm)',
+                                font: {
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.05)'
                             }
                         }
                     },
                     plugins: {
                         legend: {
-                            display: true
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                            titleColor: '#212121',
+                            bodyColor: '#212121',
+                            borderColor: '#e0e0e0',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label.split('(')[0]}: ${context.parsed.y.toFixed(2)} cm`;
+                                }
+                            }
                         }
                     }
                 }
             });
+        }
+
+        // Simulação inicial ao carregar a página
+        window.onload = function() {
+            simular();
         }
     </script>
 </body>
