@@ -60,7 +60,120 @@
             </ul>
             <p>A altura estimada da planta é calculada com base em um modelo estatístico que considera os efeitos individuais e de interação entre estes fatores.</p>
             <p>Desenvolvido com Flask (backend), HTML/JavaScript/Chart.js (frontend) e análise estatística em Python.</p>
+            
+            <div class="metrics-container">
+                <h3>Métricas do Modelo Estatístico</h3>
+                
+                <div class="metrics-grid">
+                    <div class="metrics-card">
+                        <h4>Qualidade do Ajuste</h4>
+                        <div class="metric-item">
+                            <span class="metric-name">R²:</span>
+                            <span class="metric-value">0.978</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-name">R² Ajustado:</span>
+                            <span class="metric-value">0.961</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-name">F-statistic:</span>
+                            <span class="metric-value">58.74</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-name">Prob (F-statistic):</span>
+                            <span class="metric-value">0.000917</span>
+                        </div>
+                    </div>
+                    
+                    <div class="metrics-card">
+                        <h4>Informações do Modelo</h4>
+                        <div class="metric-item">
+                            <span class="metric-name">Observações:</span>
+                            <span class="metric-value">8</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-name">Variável Dependente:</span>
+                            <span class="metric-value">Altura</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-name">AIC:</span>
+                            <span class="metric-value">11.07</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-name">BIC:</span>
+                            <span class="metric-value">11.39</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <h4>Coeficientes do Modelo</h4>
+                <div class="coefficients-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Parâmetro</th>
+                                <th>Coeficiente</th>
+                                <th>Erro Padrão</th>
+                                <th>t</th>
+                                <th>P>|t|</th>
+                                <th>IC [2.5%]</th>
+                                <th>IC [97.5%]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Intercepto</td>
+                                <td>5.4335</td>
+                                <td>0.147</td>
+                                <td>37.059</td>
+                                <td>0.000</td>
+                                <td>5.026</td>
+                                <td>5.841</td>
+                            </tr>
+                            <tr>
+                                <td>Luz</td>
+                                <td>2.0300</td>
+                                <td>0.207</td>
+                                <td>9.790</td>
+                                <td>0.001</td>
+                                <td>1.454</td>
+                                <td>2.606</td>
+                            </tr>
+                            <tr>
+                                <td>Água</td>
+                                <td>1.7265</td>
+                                <td>0.207</td>
+                                <td>8.326</td>
+                                <td>0.001</td>
+                                <td>1.151</td>
+                                <td>2.302</td>
+                            </tr>
+                            <tr>
+                                <td>Luz:Água</td>
+                                <td>0.6888</td>
+                                <td>0.207</td>
+                                <td>3.322</td>
+                                <td>0.029</td>
+                                <td>0.113</td>
+                                <td>1.265</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="interpretation">
+                    <h4>Interpretação:</h4>
+                    <p>O modelo apresenta um excelente ajuste com R² de 0.978, explicando aproximadamente 98% da variação na altura das plantas. Os coeficientes indicam que:</p>
+                    <ul>
+                        <li>A luz tem o maior impacto positivo no crescimento (coef. 2.03)</li>
+                        <li>A água também tem impacto significativo (coef. 1.73)</li>
+                        <li>Existe um efeito positivo de interação entre luz e água (coef. 0.69)</li>
+                    </ul>
+                    <p>Todos os parâmetros são estatisticamente significativos (p < 0.05).</p>
+                </div>
+            </div>
         </div>
+        
         
         <div class="footer">
             <p>Desenvolvido por Wellington M Santos | <a href="https://github.com/esscova" target="_blank">GitHub</a></p>

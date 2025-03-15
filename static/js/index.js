@@ -127,6 +127,7 @@ function atualizarGrafico(dados) {
     });
 }
 
+
 window.onload = function() {
     simular();
 }
